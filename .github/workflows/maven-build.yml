@@ -1,0 +1,54 @@
+name: Cross-OS Maven Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # 1. KHAI BÁO MATRIX STRATEGY
+    strategy:
+      # Nếu 1 OS lỗi, các OS khác vẫn tiếp tục chạy chứ không bị dừng (fail-fast: false)
+      fail-fast: false
+      matrix:
+        # Chạy đồng thời trên 3 hệ điều hành
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    # 2. SỬ DỤNG MATRIX OS
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # Bổ sung lệnh cấp quyền thực thi cho Wrapper (Rất quan trọng cho Ubuntu/Mac)
+      - name: Make Maven Wrapper Executable (Linux/Mac)
+        if: runner.os != 'Windows'
+        run: chmod +x mvnw
+
+      # 3. Chạy lệnh Build bằng Wrapper
+      - name: Build with Maven
+        # Gọi file mvnw.cmd nếu là Windows, gọi ./mvnw nếu là Linux/Mac
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            ./mvnw.cmd clean package
+          else
+            ./mvnw clean package
+          fi
+        shell: bash
+
+      # 4. Upload Artifact (Ghi rõ tên OS để phân biệt)
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar-${{ matrix.os }}
+          path: target/*.jar
