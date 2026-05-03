@@ -1,9 +1,9 @@
 # Bài 4: Kiểm thử đa hệ điều hành với Matrix Strategy
 
 **1. Đường dẫn Repository:**
-👉 [Dán link GitHub Bài 4 của bạn vào đây]
+https://github.com/caoduongle/Bai4Week9
 
-**2. Chiến lược Matrix (`ci.yml`):**
+**2. Chiến lược Matrix :**
 - Đã cấu hình `strategy.matrix.os` với 3 môi trường: `ubuntu-latest`, `windows-latest`, `macos-latest`.
 - Sử dụng biến `matrix.os` trong `runs-on` và đặt tên file Artifact động.
 - Đã xử lý lệnh gọi `./mvnw` và `./mvnw.cmd` tùy thuộc vào hệ điều hành (`$RUNNER_OS`).
